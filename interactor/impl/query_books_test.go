@@ -1,16 +1,16 @@
-package interactor
+package impl
 
 import (
-	"github.com/causton81/books/boundary"
-	"github.com/causton81/books/context"
+	"github.com/causton81/books"
+	"github.com/causton81/books/interactor"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestQueryBooks(t *testing.T) {
-	context.VolumeSrv = &bookServiceStub{}
+	books.VolumeService = &bookServiceStub{}
 	qb := NewQueryBook()
-	res, err := qb.Execute(&boundary.QueryBookRequest{Query: "stormlight"})
+	res, err := qb.Execute(&interactor.QueryBookRequest{Query: "stormlight"})
 	a := require.New(t)
 	a.NoError(err)
 	a.Len(res.Books, 2)
@@ -42,16 +42,16 @@ func (v volumeStub) Authors() []string {
 	return v.authors
 }
 
-func (b bookServiceStub) FullTextSearch(query string) ([]boundary.Volume, error) {
-	return []boundary.Volume{
+func (b bookServiceStub) FullTextSearch(query string) ([]interactor.Volume, error) {
+	return []interactor.Volume{
 		volumeStub{id: "unit-book-id-1", title: "unit title 1", authors: []string{"unit author 1"}, publisher: "unit publisher 1"},
 		volumeStub{id: "unit-book-id-2", title: "unit title 2", authors: []string{"unit author 2"}, publisher: "unit publisher 2"},
 	}, nil
 }
 
-func assertBookModel(a *require.Assertions, obtained *boundary.BookModel, suff string) {
+func assertBookModel(a *require.Assertions, obtained *interactor.BookModel, suff string) {
 	a.Equal(
-		&boundary.BookModel{
+		&interactor.BookModel{
 			Id:        "unit-book-id-" + suff,
 			Title:     "unit title " + suff,
 			Authors:   []string{"unit author " + suff},

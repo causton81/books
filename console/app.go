@@ -1,16 +1,17 @@
-package lib
+package console
 
 import (
 	"bufio"
 	"fmt"
-	"github.com/causton81/books/boundary"
-	"github.com/causton81/books/context"
+	"github.com/causton81/books"
+	"github.com/causton81/books/interactor"
+	"github.com/causton81/books/lib"
 	"os"
 	"strconv"
 	"strings"
 )
 
-func NewTextConsole() boundary.Console {
+func NewTextConsole() Console {
 	cons := new(TextConsole)
 	cons.r = bufio.NewReader(os.Stdin)
 	return cons
@@ -22,7 +23,7 @@ type TextConsole struct {
 
 func (t *TextConsole) ReadLine() string {
 	line, err := t.r.ReadString('\n')
-	Must(err)
+	lib.Must(err)
 	return strings.TrimSpace(line)
 }
 
@@ -30,17 +31,17 @@ func (t *TextConsole) Printf(format string, args ...interface{}) {
 	fmt.Printf(format, args...)
 }
 
-type ConsoleApp interface {
-	Run(boundary.Console) int
+type App interface {
+	Run(Console) int
 }
 
 type consoleApp struct {
 }
 
-func (c consoleApp) Run(cons boundary.Console) int {
+func (c consoleApp) Run(cons Console) int {
 	cons.Printf("Welcome to the Books App!\n")
 	cmd := ""
-	res := &boundary.QueryBookResponse{}
+	res := &interactor.QueryBookResponse{}
 	var err error
 	for "x" != cmd {
 		if 0 < len(res.Books) {
@@ -62,11 +63,11 @@ Enter an option > `)
 			cons.Printf("Query: ")
 			queryString := cons.ReadLine()
 			//qb := interactor.NewQueryBook()
-			res, err = context.QB.Execute(&boundary.QueryBookRequest{Query: queryString})
-			Must(err)
+			res, err = books.QueryBook.Execute(&interactor.QueryBookRequest{Query: queryString})
+			lib.Must(err)
 
 		case "v":
-			res := context.VL.Execute()
+			res := books.ViewList.Execute()
 			cons.Printf("Your reading list:\n")
 			for i, bk := range res.Books {
 				cons.Printf("%d - %q\n", i, bk.Title)
@@ -76,7 +77,7 @@ Enter an option > `)
 			n, err := strconv.Atoi(cmd)
 			if nil == err && n < len(res.Books) {
 				//cons.Printf("TODO: u picked %d %q\n", n, res.Books[n].Id)
-				err = context.AB.Execute(boundary.AddBookRequest{Id: res.Books[n].Id})
+				err = books.AddBookToList.Execute(interactor.AddBookRequest{Id: res.Books[n].Id})
 				if nil != err {
 					cons.Printf(err.Error())
 				}
@@ -90,6 +91,6 @@ Enter an option > `)
 	return 0
 }
 
-func NewConsoleApp() ConsoleApp {
+func NewConsoleApp() App {
 	return &consoleApp{}
 }

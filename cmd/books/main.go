@@ -1,20 +1,20 @@
 package main
 
 import (
-	"github.com/causton81/books/context"
+	"github.com/causton81/books"
+	"github.com/causton81/books/console"
 	"github.com/causton81/books/gateway"
-	"github.com/causton81/books/interactor"
-	"github.com/causton81/books/lib"
+	"github.com/causton81/books/interactor/impl"
 	"github.com/causton81/books/lib/google"
 	"os"
 )
 
 func main() {
-	context.VolumeSrv = google.NewGoogleVolumeService()
-	context.BookGw = gateway.NewInMemoryBookGw()
-	context.ListGw = gateway.NewInMemoryListGw()
-	context.QB = interactor.NewQueryBook()
-	context.AB = interactor.NewAddBookToList()
-	context.VL = interactor.NewViewList()
-	os.Exit(lib.NewConsoleApp().Run(lib.NewTextConsole()))
+	books.VolumeService = google.NewGoogleVolumeService()
+	books.BookGateway = gateway.NewInMemoryBookGw()
+	books.ListGateway = gateway.NewInMemoryListGw()
+	books.QueryBook = impl.NewQueryBook()
+	books.AddBookToList = impl.NewAddBookToList()
+	books.ViewList = impl.NewViewList()
+	os.Exit(console.NewConsoleApp().Run(console.NewTextConsole()))
 }

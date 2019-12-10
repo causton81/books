@@ -1,8 +1,8 @@
 package gateway
 
 import (
-	"github.com/causton81/books/boundary"
-	"github.com/causton81/books/context"
+	"github.com/causton81/books"
+	"github.com/causton81/books/interactor"
 	"log"
 )
 
@@ -10,24 +10,20 @@ type listGateway struct {
 	books map[string]bool
 }
 
-//type BookImpl struct {
-//	id string
-//}
-
-func (g *listGateway) AddBook(b boundary.Book) {
+func (g *listGateway) AddBook(b interactor.Book) {
 	id := b.(*inMemBook).id
 	g.books[id] = true
 }
 
-func (g *listGateway) GetBooks() []boundary.Book {
-	var res []boundary.Book
+func (g *listGateway) GetBooks() []interactor.Book {
+	var res []interactor.Book
 	for id := range g.books {
-		res = append(res, context.BookGw.FindById(id))
+		res = append(res, books.BookGateway.FindById(id))
 	}
 	return res
 }
 
-func NewInMemoryListGw() boundary.ListGateway {
+func NewInMemoryListGw() interactor.ListGateway {
 	gw := new(listGateway)
 	gw.books = make(map[string]bool)
 	return gw
@@ -58,17 +54,17 @@ func (b *inMemBook) SetId(id string) {
 	b.id = id
 }
 
-func (gw *bookGateway) NewBook() boundary.Book {
+func (gw *bookGateway) NewBook() interactor.Book {
 	return new(inMemBook)
 }
 
-func (gw *bookGateway) SaveBook(b boundary.Book) {
+func (gw *bookGateway) SaveBook(b interactor.Book) {
 	book := b.(*inMemBook)
 	id := book.id
 	gw.books[id] = book
 }
 
-func (gw *bookGateway) FindById(id string) boundary.Book {
+func (gw *bookGateway) FindById(id string) interactor.Book {
 	if b, found := gw.books[id]; found {
 		return b
 	}
@@ -77,7 +73,7 @@ func (gw *bookGateway) FindById(id string) boundary.Book {
 	return nil
 }
 
-func NewInMemoryBookGw() boundary.BookGateway {
+func NewInMemoryBookGw() interactor.BookGateway {
 	gw := new(bookGateway)
 	gw.books = make(map[string]*inMemBook)
 	return gw

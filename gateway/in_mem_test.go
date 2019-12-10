@@ -1,14 +1,14 @@
 package gateway
 
 import (
-	"github.com/causton81/books/context"
+	books2 "github.com/causton81/books"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestInMemoryGateway(t *testing.T) {
 	bg := NewInMemoryBookGw()
-	context.BookGw = bg
+	books2.BookGateway = bg
 	book1 := bg.NewBook()
 	book1.SetId("id1")
 	book1.SetTitle("title 1")

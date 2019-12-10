@@ -3,13 +3,13 @@ package google
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/causton81/books/boundary"
+	"github.com/causton81/books/interactor"
 	"github.com/causton81/books/lib"
 	"net/http"
 	"net/url"
 )
 
-func NewGoogleVolumeService() boundary.VolumeService {
+func NewGoogleVolumeService() interactor.VolumeService {
 	return new(googleVolumeService)
 }
 
@@ -45,7 +45,7 @@ type volumeResult struct {
 	}
 }
 
-func (g *googleVolumeService) FullTextSearch(query string) ([]boundary.Volume, error) {
+func (g *googleVolumeService) FullTextSearch(query string) ([]interactor.Volume, error) {
 	// https://developers.google.com/books/docs/v1/reference/volumes/list.html
 	queryUrl, err := url.Parse("https://www.googleapis.com/books/v1/volumes")
 	lib.Must(err)
@@ -80,7 +80,7 @@ func (g *googleVolumeService) FullTextSearch(query string) ([]boundary.Volume, e
 		return nil, fmt.Errorf("expecting response kind %q: got %q", BooksKind, out.Kind)
 	}
 
-	var volumes []boundary.Volume
+	var volumes []interactor.Volume
 	for _, item := range out.Items {
 		volumes = append(volumes, volume{item})
 	}
